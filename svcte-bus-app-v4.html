@@ -280,35 +280,35 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
 const stops = [
-  {name:"Andrew Hill",amBus:307,pmBus:304,amPickup:"7:13 AM",pmPickup:"12:24 PM",amDrop:"10:45 AM",pmDrop:"4:00 PM",lat:37.2922,lng:-121.8312},
-  {name:"Apollo",amBus:309,pmBus:307,amPickup:"6:55 AM",pmPickup:"12:17 PM",amDrop:"10:53 AM",pmDrop:"4:07 PM",lat:37.3313,lng:-121.8317},
-  {name:"Branham",amBus:301,pmBus:302,amPickup:"7:08 AM",pmPickup:"12:20 PM",amDrop:"10:46 AM",pmDrop:"4:21 PM",lat:37.2541,lng:-121.8997},
-  {name:"Broadway",amBus:310,pmBus:302,amPickup:"7:15 AM",pmPickup:"12:27 PM",amDrop:"10:42 AM",pmDrop:"4:14 PM",lat:37.2615,lng:-121.8798},
-  {name:"Calaveras Hills",amBus:305,pmBus:305,amPickup:null,pmPickup:"11:59 AM",amDrop:"10:35 AM",pmDrop:"4:35 PM",lat:37.4369,lng:-121.8828},
-  {name:"Del Mar",amBus:311,pmBus:310,amPickup:"6:40 AM",pmPickup:"12:08 PM",amDrop:"10:55 AM",pmDrop:"4:09 PM",lat:37.304,lng:-121.9296},
-  {name:"Evergreen Valley",amBus:312,pmBus:308,amPickup:"6:49 AM",pmPickup:"12:07 PM",amDrop:"11:02 AM",pmDrop:"4:16 PM",lat:37.3243,lng:-121.7788},
-  {name:"Foothill",amBus:305,pmBus:307,amPickup:"6:47 AM",pmPickup:"11:50 AM",amDrop:"10:58 AM",pmDrop:"4:27 PM",lat:37.3688,lng:-121.8389},
-  {name:"Gunderson",amBus:302,pmBus:302,amPickup:"7:12 AM",pmPickup:"12:22 PM",amDrop:"10:46 AM",pmDrop:"4:05 PM",lat:37.2589,lng:-121.8551},
-  {name:"Independence",amBus:306,pmBus:306,amPickup:"7:02 AM",pmPickup:"12:10 PM",amDrop:"10:54 AM",pmDrop:"4:17 PM",lat:37.3684,lng:-121.8567},
-  {name:"James Lick",amBus:305,pmBus:null,amPickup:"7:04 AM",pmPickup:null,amDrop:"10:51 AM",pmDrop:null,lat:37.3675,lng:-121.83},
-  {name:"Leigh",amBus:310,pmBus:303,amPickup:"6:59 AM",pmPickup:"12:10 PM",amDrop:"11:02 AM",pmDrop:"4:03 PM",lat:37.242,lng:-121.9215},
-  {name:"Leland",amBus:302,pmBus:null,amPickup:null,pmPickup:null,amDrop:"11:03 AM",pmDrop:null,lat:37.2172,lng:-121.8444},
-  {name:"Lincoln",amBus:311,pmBus:304,amPickup:"6:37 AM",pmPickup:"12:25 PM",amDrop:"11:08 AM",pmDrop:"4:20 PM",lat:37.3289,lng:-121.9241},
-  {name:"Los Gatos",amBus:301,pmBus:303,amPickup:"6:18 AM",pmPickup:"12:18 PM",amDrop:"11:02 AM",pmDrop:"4:17 PM",lat:37.2225,lng:-121.9759},
-  {name:"Milpitas",amBus:305,pmBus:305,amPickup:"6:33 AM",pmPickup:"11:50 AM",amDrop:"11:13 AM",pmDrop:"4:44 PM",lat:37.4509,lng:-121.9005},
-  {name:"Mt. Pleasant",amBus:309,pmBus:307,amPickup:"6:38 AM",pmPickup:"12:05 PM",amDrop:"11:03 AM",pmDrop:"4:16 PM",lat:37.3465,lng:-121.8081},
-  {name:"Oak Grove",amBus:307,pmBus:305,amPickup:"6:59 AM",pmPickup:"12:25 PM",amDrop:"10:58 AM",pmDrop:"4:03 PM",lat:37.2522,lng:-121.8199},
-  {name:"Overfelt",amBus:309,pmBus:307,amPickup:"6:52 AM",pmPickup:"12:14 PM",amDrop:"10:50 AM",pmDrop:"4:05 PM",lat:37.331,lng:-121.8293},
-  {name:"Piedmont Hills",amBus:306,pmBus:306,amPickup:"6:44 AM",pmPickup:"12:12 PM",amDrop:"11:07 AM",pmDrop:"4:29 PM",lat:37.402,lng:-121.8492},
-  {name:"Pioneer",amBus:310,pmBus:302,amPickup:"7:11 AM",pmPickup:"12:11 PM",amDrop:"10:51 AM",pmDrop:"4:28 PM",lat:37.2474,lng:-121.8829},
-  {name:"San Jose",amBus:308,pmBus:306,amPickup:"6:51 AM",pmPickup:"12:20 PM",amDrop:"11:03 AM",pmDrop:"4:03 PM",lat:37.35,lng:-121.872},
-  {name:"Santa Clara",amBus:304,pmBus:304,amPickup:"6:53 AM",pmPickup:"12:04 PM",amDrop:"11:01 AM",pmDrop:"4:40 PM",lat:37.3455,lng:-121.982},
-  {name:"Saratoga",amBus:303,pmBus:303,amPickup:"6:18 AM",pmPickup:"11:36 AM",amDrop:"11:15 AM",pmDrop:"4:33 PM",lat:37.2664,lng:-122.0296},
-  {name:"Silver Creek",amBus:312,pmBus:308,amPickup:"7:03 AM",pmPickup:"12:21 PM",amDrop:"10:49 AM",pmDrop:"4:04 PM",lat:37.3035,lng:-121.8062},
-  {name:"Westmont",amBus:303,pmBus:303,amPickup:"6:40 AM",pmPickup:"11:49 AM",amDrop:"11:02 AM",pmDrop:"4:45 PM",lat:37.2709,lng:-121.9857},
-  {name:"Wilcox",amBus:304,pmBus:310,amPickup:"6:43 AM",pmPickup:"11:54 AM",amDrop:"11:12 AM",pmDrop:"4:46 PM",lat:37.3663,lng:-121.9862},
-  {name:"Willow Glen",amBus:310,pmBus:310,amPickup:"6:56 AM",pmPickup:"12:24 PM",amDrop:"10:42 AM",pmDrop:"3:57 PM",lat:37.2908,lng:-121.8962},
-  {name:"Wilson",amBus:304,pmBus:304,amPickup:"7:01 AM",pmPickup:"12:12 PM",amDrop:"10:52 AM",pmDrop:"4:32 PM",lat:37.3456,lng:-121.9555}
+  {name:"Andrew Hill",addr:"3200 Senter Rd, San Jose, CA 95111",amBus:307,pmBus:304,amPickup:"7:13 AM",pmPickup:"12:24 PM",amDrop:"10:45 AM",pmDrop:"4:00 PM",lat:37.2922,lng:-121.8312},
+  {name:"Apollo",addr:"1930 Lexann Ave, San Jose, CA 95122",amBus:309,pmBus:307,amPickup:"6:55 AM",pmPickup:"12:17 PM",amDrop:"10:53 AM",pmDrop:"4:07 PM",lat:37.3313,lng:-121.8317},
+  {name:"Branham",addr:"1570 Branham Ln, San Jose, CA 95118",amBus:301,pmBus:302,amPickup:"7:08 AM",pmPickup:"12:20 PM",amDrop:"10:46 AM",pmDrop:"4:21 PM",lat:37.2541,lng:-121.8997},
+  {name:"Broadway",addr:"1849 Changing Times Cir, San Jose, CA 95131",amBus:310,pmBus:302,amPickup:"7:15 AM",pmPickup:"12:27 PM",amDrop:"10:42 AM",pmDrop:"4:14 PM",lat:37.2615,lng:-121.8798},
+  {name:"Calaveras Hills",addr:"455 Calaveras Blvd, Milpitas, CA 95035",amBus:305,pmBus:305,amPickup:null,pmPickup:"11:59 AM",amDrop:"10:35 AM",pmDrop:"4:35 PM",lat:37.4369,lng:-121.8828},
+  {name:"Del Mar",addr:"1224 Del Mar Ave, San Jose, CA 95128",amBus:311,pmBus:310,amPickup:"6:40 AM",pmPickup:"12:08 PM",amDrop:"10:55 AM",pmDrop:"4:09 PM",lat:37.304,lng:-121.9296},
+  {name:"Evergreen Valley",addr:"3300 Quimby Rd, San Jose, CA 95148",amBus:312,pmBus:308,amPickup:"6:49 AM",pmPickup:"12:07 PM",amDrop:"11:02 AM",pmDrop:"4:16 PM",lat:37.3243,lng:-121.7788},
+  {name:"Foothill",addr:"500 E Jackson St, San Jose, CA 95112",amBus:305,pmBus:307,amPickup:"6:47 AM",pmPickup:"11:50 AM",amDrop:"10:58 AM",pmDrop:"4:27 PM",lat:37.3688,lng:-121.8389},
+  {name:"Gunderson",addr:"622 Gaundabert Ln, San Jose, CA 95136",amBus:302,pmBus:302,amPickup:"7:12 AM",pmPickup:"12:22 PM",amDrop:"10:46 AM",pmDrop:"4:05 PM",lat:37.2589,lng:-121.8551},
+  {name:"Independence",addr:"1776 Educational Park Dr, San Jose, CA 95133",amBus:306,pmBus:306,amPickup:"7:02 AM",pmPickup:"12:10 PM",amDrop:"10:54 AM",pmDrop:"4:17 PM",lat:37.3684,lng:-121.8567},
+  {name:"James Lick",addr:"57 N White Rd, San Jose, CA 95127",amBus:305,pmBus:null,amPickup:"7:04 AM",pmPickup:null,amDrop:"10:51 AM",pmDrop:null,lat:37.3675,lng:-121.83},
+  {name:"Leigh",addr:"5210 Leigh Ave, San Jose, CA 95124",amBus:310,pmBus:303,amPickup:"6:59 AM",pmPickup:"12:10 PM",amDrop:"11:02 AM",pmDrop:"4:03 PM",lat:37.242,lng:-121.9215},
+  {name:"Leland",addr:"6677 Camden Ave, San Jose, CA 95120",amBus:302,pmBus:null,amPickup:null,pmPickup:null,amDrop:"11:03 AM",pmDrop:null,lat:37.2172,lng:-121.8444},
+  {name:"Lincoln",addr:"555 Dana Ave, San Jose, CA 95126",amBus:311,pmBus:304,amPickup:"6:37 AM",pmPickup:"12:25 PM",amDrop:"11:08 AM",pmDrop:"4:20 PM",lat:37.3289,lng:-121.9241},
+  {name:"Los Gatos",addr:"20 High School Ct, Los Gatos, CA 95030",amBus:301,pmBus:303,amPickup:"6:18 AM",pmPickup:"12:18 PM",amDrop:"11:02 AM",pmDrop:"4:17 PM",lat:37.2225,lng:-121.9759},
+  {name:"Milpitas",addr:"1285 Escuela Pkwy, Milpitas, CA 95035",amBus:305,pmBus:305,amPickup:"6:33 AM",pmPickup:"11:50 AM",amDrop:"11:13 AM",pmDrop:"4:44 PM",lat:37.4509,lng:-121.9005},
+  {name:"Mt. Pleasant",addr:"1750 S White Rd, San Jose, CA 95127",amBus:309,pmBus:307,amPickup:"6:38 AM",pmPickup:"12:05 PM",amDrop:"11:03 AM",pmDrop:"4:16 PM",lat:37.3465,lng:-121.8081},
+  {name:"Oak Grove",addr:"285 Blossom Hill Rd, San Jose, CA 95123",amBus:307,pmBus:305,amPickup:"6:59 AM",pmPickup:"12:25 PM",amDrop:"10:58 AM",pmDrop:"4:03 PM",lat:37.2522,lng:-121.8199},
+  {name:"Overfelt",addr:"375 N 101st St, San Jose, CA 95127",amBus:309,pmBus:307,amPickup:"6:52 AM",pmPickup:"12:14 PM",amDrop:"10:50 AM",pmDrop:"4:05 PM",lat:37.331,lng:-121.8293},
+  {name:"Piedmont Hills",addr:"1377 Piedmont Rd, San Jose, CA 95132",amBus:306,pmBus:306,amPickup:"6:44 AM",pmPickup:"12:12 PM",amDrop:"11:07 AM",pmDrop:"4:29 PM",lat:37.402,lng:-121.8492},
+  {name:"Pioneer",addr:"1290 Blossom Hill Rd, San Jose, CA 95118",amBus:310,pmBus:302,amPickup:"7:11 AM",pmPickup:"12:11 PM",amDrop:"10:51 AM",pmDrop:"4:28 PM",lat:37.2474,lng:-121.8829},
+  {name:"San Jose",addr:"275 N 24th St, San Jose, CA 95116",amBus:308,pmBus:306,amPickup:"6:51 AM",pmPickup:"12:20 PM",amDrop:"11:03 AM",pmDrop:"4:03 PM",lat:37.35,lng:-121.872},
+  {name:"Santa Clara",addr:"3000 Benton St, Santa Clara, CA 95051",amBus:304,pmBus:304,amPickup:"6:53 AM",pmPickup:"12:04 PM",amDrop:"11:01 AM",pmDrop:"4:40 PM",lat:37.3455,lng:-121.982},
+  {name:"Saratoga",addr:"20300 Herriman Ave, Saratoga, CA 95070",amBus:303,pmBus:303,amPickup:"6:18 AM",pmPickup:"11:36 AM",amDrop:"11:15 AM",pmDrop:"4:33 PM",lat:37.2664,lng:-122.0296},
+  {name:"Silver Creek",addr:"3434 Silver Creek Rd, San Jose, CA 95121",amBus:312,pmBus:308,amPickup:"7:03 AM",pmPickup:"12:21 PM",amDrop:"10:49 AM",pmDrop:"4:04 PM",lat:37.3035,lng:-121.8062},
+  {name:"Westmont",addr:"4805 Westmont Ave, Campbell, CA 95008",amBus:303,pmBus:303,amPickup:"6:40 AM",pmPickup:"11:49 AM",amDrop:"11:02 AM",pmDrop:"4:45 PM",lat:37.2709,lng:-121.9857},
+  {name:"Wilcox",addr:"3250 Monroe St, Santa Clara, CA 95051",amBus:304,pmBus:310,amPickup:"6:43 AM",pmPickup:"11:54 AM",amDrop:"11:12 AM",pmDrop:"4:46 PM",lat:37.3663,lng:-121.9862},
+  {name:"Willow Glen",addr:"2001 Cottle Ave, San Jose, CA 95125",amBus:310,pmBus:310,amPickup:"6:56 AM",pmPickup:"12:24 PM",amDrop:"10:42 AM",pmDrop:"3:57 PM",lat:37.2908,lng:-121.8962},
+  {name:"Wilson",addr:"1600 Llagas Rd, Morgan Hill, CA 95037",amBus:304,pmBus:304,amPickup:"7:01 AM",pmPickup:"12:12 PM",amDrop:"10:52 AM",pmDrop:"4:32 PM",lat:37.3456,lng:-121.9555}
 ];
 
 const SVCTE = {lat:37.2781,lng:-121.8661};
@@ -330,7 +330,7 @@ function renderMarkers(am, closest) {
     const isCl=closest&&s.name===closest.name;
     const icon=L.divIcon({className:'',html:`<div class="bus-marker${isCl?' closest':''}${am?'':' pm-mode'}">${bus}</div>`,iconSize:[36,36],iconAnchor:[18,18]});
     const m=L.marker([s.lat,s.lng],{icon,zIndexOffset:isCl?1000:0}).addTo(map);
-    m.bindPopup(`<div class="popup-name">${s.name}</div><div class="popup-row"><span>${am?'School pickup':'SVCTE pickup'}</span><span class="popup-val">${pickup}</span></div><div class="popup-row"><span>Bus</span><span class="popup-val">${bus}</span></div>`);
+    m.bindPopup(`<div class="popup-name">${s.name}</div>${s.addr?`<div class="popup-row" style="font-size:11px;margin-bottom:2px"><span style="color:var(--muted)">${s.addr}</span></div>`:''}<div class="popup-row"><span>${am?'School pickup':'SVCTE pickup'}</span><span class="popup-val">${pickup}</span></div><div class="popup-row"><span>Bus</span><span class="popup-val">${bus}</span></div>`);
     markers.push(m);
   });
 }
@@ -437,7 +437,32 @@ function clearAddr(){
   if(addrMarker){map.removeLayer(addrMarker);addrMarker=null;}
 }
 
+/* ── LOCAL STOP SEARCH ── */
+// Match against stop name and street address so users can search
+// "Branham Ln", "3200 Senter", "Andrew Hill", "Quimby Rd", etc.
+function localStopSearch(q) {
+  const terms = q.toLowerCase().split(/\s+/).filter(Boolean);
+  return stops.filter(s => {
+    const haystack = (s.name + ' ' + s.addr).toLowerCase();
+    return terms.every(t => haystack.includes(t));
+  }).map(s => ({
+    name: s.name + ' High School',
+    sub: s.addr,
+    lat: s.lat,
+    lng: s.lng,
+    isStop: true
+  }));
+}
+
 async function fetchAddressSuggestions(q){
+  // 1. Check local stop name/address first — instant, no API needed
+  const local = localStopSearch(q);
+  if (local.length) {
+    document.getElementById('addr-status').textContent = '';
+    showSuggestions(local);
+    return;
+  }
+
   // Append San Jose CA if no city mentioned to bias results
   const query = /san jose|milpitas|saratoga|los gatos|santa clara|campbell|cupertino/i.test(q)
     ? q : q + ', San Jose CA';
@@ -494,7 +519,8 @@ function showSuggestions(results){
   _suggestions=results;
   el.innerHTML=results.map((r,i)=>`
     <div class="suggestion-item" onclick="pickSuggestion(${i})">
-      <div class="suggestion-name">${r.name}</div>
+      <div class="suggestion-name">${r.isStop?'🚌 ':''}${r.name}</div>
+      ${r.sub?`<div class="suggestion-sub">${r.sub}</div>`:''}
     </div>`).join('');
   el.className='suggestions open';
 }
