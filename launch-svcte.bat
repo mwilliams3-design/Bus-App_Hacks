@@ -1,4 +1,9 @@
 @echo off
+echo Stopping any existing server on port 8080...
+FOR /F "tokens=5" %%P IN ('netstat -ano ^| findstr :8080 ^| findstr LISTENING') DO (
+    taskkill /PID %%P /F >nul 2>&1
+)
+echo.
 echo Starting SVCTE Bus App...
 echo.
 

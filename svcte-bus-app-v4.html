@@ -87,7 +87,7 @@
   .panel.visible { display: block; }
 
   /* Address search */
-  .addr-input-wrap { position: relative; margin-bottom: 10px; }
+  .addr-input-wrap { position: relative; margin-bottom: 8px; }
   .addr-input {
     width: 100%; padding: 13px 44px 13px 16px;
     border-radius: 14px; border: 0.5px solid var(--border);
@@ -99,6 +99,19 @@
   .addr-input:focus { border-color: rgba(168,85,247,0.5); }
   .addr-clear { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); font-size: 16px; cursor: pointer; padding: 4px; display: none; }
   .addr-clear.visible { display: block; }
+  .addr-input-row { display: flex; gap: 8px; margin-bottom: 0; }
+  .city-select {
+    flex: 0 0 auto; width: 140px; padding: 13px 30px 13px 12px;
+    border-radius: 14px; border: 0.5px solid var(--border);
+    background: var(--surface2); color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    outline: none; transition: border-color 0.15s; cursor: pointer;
+    appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237c6b9a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 10px center;
+  }
+  .city-select:focus { border-color: rgba(168,85,247,0.5); }
+  .city-select option { background: #1c1128; color: #f5f0ff; }
 
   /* Suggestions dropdown */
   .suggestions { background: var(--surface2); border: 0.5px solid var(--border); border-radius: 12px; overflow: hidden; margin-bottom: 10px; display: none; }
@@ -226,9 +239,14 @@
 
       <!-- Address panel -->
       <div class="panel" id="panel-addr">
-        <div class="addr-input-wrap">
-          <input class="addr-input" id="addr-input" type="text" placeholder="Type any address, e.g. 496 Arleta Ave…" autocomplete="off" oninput="onAddrInput()" />
-          <button class="addr-clear" id="addr-clear" onclick="clearAddr()">✕</button>
+        <div class="addr-input-row">
+          <div class="addr-input-wrap" style="flex:1;margin-bottom:0;">
+            <input class="addr-input" id="addr-input" type="text" placeholder="Street address or name…" autocomplete="off" oninput="onAddrInput()" />
+            <button class="addr-clear" id="addr-clear" onclick="clearAddr()">✕</button>
+          </div>
+          <select class="city-select" id="city-select" onchange="onCityChange()">
+            <option value="">Any city</option>
+          </select>
         </div>
         <div class="suggestions" id="suggestions"></div>
         <button class="action-btn am-btn" id="addr-search-btn" onclick="searchAddr()" disabled>
@@ -340,6 +358,7 @@ renderMarkers(mode==='am',null);
 function updateClock(){const n=new Date(),h=n.getHours(),mi=n.getMinutes(),s=n.getSeconds(),ap=h>=12?'PM':'AM',h12=h%12||12;document.getElementById('clock').textContent=`${String(h12).padStart(2,'0')}:${String(mi).padStart(2,'0')}:${String(s).padStart(2,'0')} ${ap}`;}
 updateClock(); setInterval(updateClock,1000);
 
+
 /* ── MODE ── */
 function setMode(m){
   mode=m;
@@ -412,17 +431,40 @@ function findClosest(){
 }
 
 /* ── ADDRESS SEARCH ── */
-/* ── ADDRESS SEARCH ── */
-// Uses US Census Bureau geocoder (free, no key) with Nominatim fallback
 let addrDebounce=null, _suggestions=[];
+
+// Populate city dropdown from stops data
+(function initCitySelect(){
+  const sel = document.getElementById('city-select');
+  const cities = [...new Set(stops.map(s => {
+    const m = s.addr.match(/,\s*([^,]+),\s*CA\s*\d/);
+    return m ? m[1].trim() : '';
+  }).filter(Boolean))].sort();
+  cities.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c; o.textContent = c;
+    sel.appendChild(o);
+  });
+})();
+
+function onCityChange(){
+  // Trigger a new search when city changes if there's already a street typed
+  const v = document.getElementById('addr-input').value.trim();
+  if(v.length >= 2) triggerSearch(v);
+}
 
 function onAddrInput(){
   const v=document.getElementById('addr-input').value.trim();
   document.getElementById('addr-clear').className='addr-clear'+(v?' visible':'');
   if(!v){hideSuggestions();selectedAddr=null;document.getElementById('addr-search-btn').disabled=true;return;}
   clearTimeout(addrDebounce);
-  if(v.length<4){hideSuggestions();return;}
-  addrDebounce=setTimeout(()=>fetchAddressSuggestions(v),500);
+  if(v.length<2){hideSuggestions();return;}
+  addrDebounce=setTimeout(()=>triggerSearch(v),400);
+}
+
+function triggerSearch(street){
+  const city = document.getElementById('city-select').value;
+  fetchAddressSuggestions(street, city);
 }
 
 function clearAddr(){
@@ -454,63 +496,142 @@ function localStopSearch(q) {
   }));
 }
 
-async function fetchAddressSuggestions(q){
-  // 1. Check local stop name/address first — instant, no API needed
-  const local = localStopSearch(q);
+async function fetchAddressSuggestions(street, selectedCity){
+  // 1. Local stop name/address match — instant, no API
+  const local = localStopSearch(street);
   if (local.length) {
     document.getElementById('addr-status').textContent = '';
     showSuggestions(local);
     return;
   }
 
-  // Append San Jose CA if no city mentioned to bias results
-  const query = /san jose|milpitas|saratoga|los gatos|santa clara|campbell|cupertino/i.test(q)
-    ? q : q + ', San Jose CA';
+  // Cities to search: if user picked one use only that, otherwise all stop cities
+  const allCities = [...new Set(stops.map(s => {
+    const m = s.addr.match(/,\s*([^,]+),\s*CA\s*\d/);
+    return m ? m[1].trim() : '';
+  }).filter(Boolean))];
+  const citiesToSearch = selectedCity ? [selectedCity] : allCities;
 
-  document.getElementById('addr-status').textContent='Searching...';
+  document.getElementById('addr-status').textContent = 'Searching\u2026';
 
-  // Try US Census Bureau geocoder first — completely free, no key, very accurate
-  try {
-    const url = 'https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?'
-      + 'benchmark=2020&format=json&address=' + encodeURIComponent(query);
-    const res = await fetch(url, {signal: AbortSignal.timeout(5000)});
-    const data = await res.json();
-    const matches = (data.result?.addressMatches || []);
-    if(matches.length){
-      const results = matches.slice(0,6).map(m=>({
-        name: m.matchedAddress,
-        lat: parseFloat(m.coordinates.y),
-        lng: parseFloat(m.coordinates.x)
-      }));
-      document.getElementById('addr-status').textContent='';
-      showSuggestions(results);
-      return;
-    }
-  } catch(e){}
+  function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 
-  // Fallback: Nominatim (OpenStreetMap) — free, no key needed
-  try {
-    const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&countrycodes=us'
-      + '&q=' + encodeURIComponent(query);
-    const res = await fetch(url, {
-      headers: {'Accept-Language':'en', 'User-Agent':'SVCTEBusApp/1.0'},
-      signal: AbortSignal.timeout(5000)
+  // Structured Nominatim query: street + city separately = much more accurate
+  async function nominatimStructured(streetQ, city) {
+    const params = new URLSearchParams({
+      format: 'jsonv2', limit: 3, countrycodes: 'us',
+      state: 'California', street: streetQ, city: city
+    });
+    const res = await fetch('https://nominatim.openstreetmap.org/search?' + params, {
+      headers: { 'Accept-Language': 'en', 'User-Agent': 'SVCTEBusApp/1.0' },
+      signal: AbortSignal.timeout(7000)
     });
     const data = await res.json();
-    if(data.length){
-      const results = data.map(r=>({
-        name: r.display_name.split(',').slice(0,3).join(','),
-        lat: parseFloat(r.lat),
-        lng: parseFloat(r.lon)
-      }));
-      document.getElementById('addr-status').textContent='';
-      showSuggestions(results);
+    return data.map(r => ({
+      name: r.display_name.split(',').slice(0,3).join(','),
+      lat: parseFloat(r.lat), lng: parseFloat(r.lon)
+    }));
+  }
+
+  // Free-text fallback per city
+  async function nominatimFreetext(streetQ, city) {
+    // Compute bounding box from actual stop coordinates + padding so no city is ever clipped
+    const pad = 0.15;
+    const minLat = Math.min(...stops.map(s=>s.lat)) - pad;
+    const maxLat = Math.max(...stops.map(s=>s.lat)) + pad;
+    const minLng = Math.min(...stops.map(s=>s.lng)) - pad;
+    const maxLng = Math.max(...stops.map(s=>s.lng)) + pad;
+    // Nominatim viewbox format: left,top,right,bottom (west,north,east,south)
+    const viewbox = `${minLng},${maxLat},${maxLng},${minLat}`;
+    const params = new URLSearchParams({
+      format: 'jsonv2', limit: 3, countrycodes: 'us',
+      viewbox, bounded: '0',
+      q: streetQ + ', ' + city + ', CA'
+    });
+    const res = await fetch('https://nominatim.openstreetmap.org/search?' + params, {
+      headers: { 'Accept-Language': 'en', 'User-Agent': 'SVCTEBusApp/1.0' },
+      signal: AbortSignal.timeout(7000)
+    });
+    const data = await res.json();
+    return data.map(r => ({
+      name: r.display_name.split(',').slice(0,3).join(','),
+      lat: parseFloat(r.lat), lng: parseFloat(r.lon)
+    }));
+  }
+
+  function dedup(arr) {
+    const seen = new Set();
+    return arr.filter(item => {
+      const key = Math.round(item.lat*1000)+','+Math.round(item.lng*1000);
+      if(seen.has(key)) return false; seen.add(key); return true;
+    });
+  }
+
+  try {
+    let combined = [];
+
+    // Pass 1: structured search across target cities (serialized for rate limit)
+    for (let i = 0; i < citiesToSearch.length; i++) {
+      if (i > 0) await sleep(220);
+      try { combined.push(...await nominatimStructured(street, citiesToSearch[i])); } catch(e){}
+    }
+
+    // Pass 2: free-text fallback for cities that returned nothing from structured
+    if (!selectedCity && combined.length < citiesToSearch.length) {
+      const foundCities = new Set(combined.map(r => r.name.split(',')[1]?.trim()));
+      const missing = citiesToSearch.filter(c => ![...foundCities].some(f => f?.toLowerCase().includes(c.toLowerCase())));
+      for (let i = 0; i < missing.length; i++) {
+        if (i > 0) await sleep(220);
+        try { combined.push(...await nominatimFreetext(street, missing[i])); } catch(e){}
+      }
+    }
+    if (selectedCity && !combined.length) {
+      combined.push(...await nominatimFreetext(street, selectedCity));
+    }
+
+    combined = dedup(combined);
+    combined.sort((a,b) => distToNearestStop(a.lat,a.lng) - distToNearestStop(b.lat,b.lng));
+    const results = filterNearStops(combined, 4);
+    if (results.length) {
+      document.getElementById('addr-status').textContent = '';
+      showSuggestions(results.slice(0,8));
       return;
     }
-  } catch(e){}
+  } catch(e) {}
 
-  document.getElementById('addr-status').textContent='No results found. Try adding your city name.';
+  // Last-resort: Census Bureau (best for full house-number addresses)
+  try {
+    const fbq = street + (selectedCity ? ', ' + selectedCity + ', CA' : ', Santa Clara County CA');
+    const url = 'https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?benchmark=2020&format=json&address='
+      + encodeURIComponent(fbq);
+    const res = await fetch(url, { signal: AbortSignal.timeout(6000) });
+    const data = await res.json();
+    const matches = data.result?.addressMatches || [];
+    if (matches.length) {
+      const results = filterNearStops(matches.slice(0,6).map(m => ({
+        name: m.matchedAddress,
+        lat: parseFloat(m.coordinates.y), lng: parseFloat(m.coordinates.x)
+      })), 4);
+      if (results.length) {
+        document.getElementById('addr-status').textContent = '';
+        showSuggestions(results);
+        return;
+      }
+    }
+  } catch(e) {}
+
+  document.getElementById('addr-status').textContent = 'No addresses found within 4 miles of a bus stop. Try a nearby street in the service area.';
   hideSuggestions();
+}
+
+/* Return the distance (miles) to the nearest bus stop */
+function distToNearestStop(lat, lng) {
+  return Math.min(...stops.map(s => haversine(lat, lng, s.lat, s.lng)));
+}
+
+/* Keep only suggestions within 4 miles of at least one bus stop */
+function filterNearStops(results, maxMiles) {
+  return results.filter(r => distToNearestStop(r.lat, r.lng) <= maxMiles);
 }
 
 function showSuggestions(results){

@@ -1,5 +1,9 @@
 #!/bin/bash
 
+echo "Stopping any existing server on port 8080..."
+lsof -ti tcp:8080 | xargs kill -9 2>/dev/null || true
+sleep 0.5
+
 echo "Starting SVCTE Bus App..."
 echo ""
 
